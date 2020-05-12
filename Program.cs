@@ -39,6 +39,8 @@ namespace access_database_csharp_dotnet_framework
             OleDbConnection connection = new OleDbConnection(stringConnection);
             connection.Open();
             OleDbCommand command = null;
+            OleDbDataReader reader = null;
+            string answer = "";
             command = new OleDbCommand("INSERT INTO [Студенты] VALUES ('Бубулюка', 171, 0);", connection);
             command.ExecuteNonQuery();
             command = new OleDbCommand("INSERT INTO [Студенты] VALUES ('Булкин', 181, -1);", connection);
@@ -57,6 +59,28 @@ namespace access_database_csharp_dotnet_framework
             command.ExecuteNonQuery();
             command = new OleDbCommand("INSERT INTO [Продукты] VALUES ('Макарошки', 40, '01.01.2020');", connection);
             command.ExecuteNonQuery();
+
+            command = new OleDbCommand("SELECT Sum([Цена]) AS [Сумма] FROM [Продукты]", connection);
+            Console.WriteLine($"Стоимость всех продуктов {command.ExecuteScalar().ToString()} бубликов");
+
+            command = new OleDbCommand("SELECT Имя FROM [Студенты] WHERE Группа =181;", connection);
+            reader = command.ExecuteReader();
+            
+            while (reader.Read())
+            {
+                answer += reader[0].ToString() + " ";
+            }
+            Console.WriteLine($"Студенты 181 группы: {answer}");
+
+            command = new OleDbCommand("SELECT Имя FROM[Преподаватели] WHERE [Дата приема на работу] = (SELECT max([Дата приема на работу]) FROM[Преподаватели]);", connection);
+            reader = command.ExecuteReader();
+            answer = "";
+            while (reader.Read())
+            {
+                answer += reader[0].ToString() + " ";
+            }
+            Console.WriteLine($"Самый молодой преподаватель - {answer}");
+
 
             connection.Close();
 
