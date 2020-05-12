@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using ADOX;
 using System.IO;
+using System.Data.OleDb;
 
 namespace access_database_csharp_dotnet_framework
 {
@@ -11,21 +12,22 @@ namespace access_database_csharp_dotnet_framework
     {
         static void Main(string[] args)
         {
-            bool existsDatabase = File.Exists("file.accdb");
+            string stringConnection = "Provider = Microsoft.ACE.OLEDB.12.0; " + "Data Source = file.accdb;";
+
             File.Delete("file.accdb");
             ADOX.Catalog cat = new ADOX.Catalog();
-            cat.Create("Provider = Microsoft.ACE.OLEDB.12.0; " + "Data Source = file.accdb;");
+            cat.Create(stringConnection);
             ADOX.Table table = new ADOX.Table();
             table.Name = "Студенты";
             table.Columns.Append("Имя");
-            table.Columns.Append("Номер группы", DataTypeEnum.adInteger);
+            table.Columns.Append("Группа", DataTypeEnum.adInteger);
             table.Columns.Append("Очное обучение", DataTypeEnum.adBoolean);
             cat.Tables.Append(table);
             table = new ADOX.Table();
             table.Name = "Преподаватели";
             table.Columns.Append("Имя");
-            table.Columns.Append("Номер группы", DataTypeEnum.adInteger);
-            table.Columns.Append("Дата приема на рабоут", DataTypeEnum.adDate);
+            table.Columns.Append("Группа", DataTypeEnum.adInteger);
+            table.Columns.Append("Дата приема на работу", DataTypeEnum.adDate);
             cat.Tables.Append(table);
             table = new ADOX.Table();
             table.Name = "Продукты";
@@ -33,6 +35,32 @@ namespace access_database_csharp_dotnet_framework
             table.Columns.Append("Цена", DataTypeEnum.adInteger);
             table.Columns.Append("Срок годности", DataTypeEnum.adDate);
             cat.Tables.Append(table);
+
+            OleDbConnection connection = new OleDbConnection(stringConnection);
+            connection.Open();
+            OleDbCommand command = null;
+            command = new OleDbCommand("INSERT INTO [Студенты] VALUES ('Бубулюка', 171, 0);", connection);
+            command.ExecuteNonQuery();
+            command = new OleDbCommand("INSERT INTO [Студенты] VALUES ('Булкин', 181, -1);", connection);
+            command.ExecuteNonQuery();
+            command = new OleDbCommand("INSERT INTO [Студенты] VALUES ('Порошков', 181, 0);", connection);
+            command.ExecuteNonQuery();
+            command = new OleDbCommand("INSERT INTO [Преподаватели] VALUES ('Иванов', 171, '01.01.2001');", connection);
+            command.ExecuteNonQuery();
+            command = new OleDbCommand("INSERT INTO [Преподаватели] VALUES ('Петрова', 171, '01.05.2010');", connection);
+            command.ExecuteNonQuery();
+            command = new OleDbCommand("INSERT INTO [Преподаватели] VALUES ('Литров', 181, '01.01.2015');", connection);
+            command.ExecuteNonQuery();
+            command = new OleDbCommand("INSERT INTO [Продукты] VALUES ('Сникерс', 70, '01.01.2020');", connection);
+            command.ExecuteNonQuery();
+            command = new OleDbCommand("INSERT INTO [Продукты] VALUES ('Кола', 45, '01.01.2020');", connection);
+            command.ExecuteNonQuery();
+            command = new OleDbCommand("INSERT INTO [Продукты] VALUES ('Макарошки', 40, '01.01.2020');", connection);
+            command.ExecuteNonQuery();
+
+            connection.Close();
+
+
             //do
             //{
             //    if (existsDatabase) Console.WriteLine("База данных найдена");
